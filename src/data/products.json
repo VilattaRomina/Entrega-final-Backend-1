@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "title": "Laptop Gaming",
+    "description": "Laptop para gaming de alto rendimiento",
+    "code": "LAP001",
+    "price": 1500,
+    "stock": 10,
+    "category": "Electrónicos",
+    "status": true
+  },
+  {
+    "id": "2",
+    "title": "Mouse Inalámbrico",
+    "description": "Mouse inalámbrico ergonómico",
+    "code": "MOU001",
+    "price": 25.99,
+    "stock": 50,
+    "category": "Accesorios",
+    "status": true
+  },
+  {
+    "id": "3",
+    "title": "Teclado Mecánico",
+    "description": "Teclado mecánico RGB",
+    "code": "TEC001",
+    "price": 89.99,
+    "stock": 30,
+    "category": "Accesorios",
+    "status": true
+  },
+  {
+    "id": "a925429c-ab6b-44e2-bf25-4def36ca22f2",
+    "title": "Notebook",
+    "description": "Notebook alto rendimiento",
+    "code": "NOTE00",
+    "price": 1200,
+    "stock": 5,
+    "category": "Electrónicos",
+    "status": true
+  }
+]

@@ -1,0 +1,130 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            Productos 
+        </h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-plus"></i> Agregar Nuevo Producto</h5>
+            </div>
+            <div class="card-body">
+                {{> product-form}}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Lista de Productos</h5>
+            </div>
+            <div class="card-body">
+                <div id="productsList">
+                    {{#if products.length}}
+                        <div class="row">
+                            {{#each products}}
+                                {{> product-card showDeleteButton=true}}
+                            {{/each}}
+                        </div>
+                    {{else}}
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i>
+                            No hay productos disponibles
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function createProductCard(product) {
+        return `
+            <div class="col-md-4 mb-4" id="product-${product.id}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">${product.title}</h5>
+                        <p class="card-text">${product.description}</p>
+                        <ul class="list-unstyled">
+                            <li><strong>Precio:</strong> $${product.price}</li>
+                            <li><strong>Stock:</strong> ${product.stock}</li>
+                            <li><strong>Categoría:</strong> ${product.category}</li>
+                            <li><strong>Código:</strong> ${product.code}</li>
+                        </ul>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge ${product.status ? 'bg-success' : 'bg-danger'}">
+                                ${product.status ? 'Disponible' : 'No disponible'}
+                            </span>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.id}')">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const socket = io();
+        console.log('Socket conectado:', socket.connected);
+
+        socket.on('connect', () => {
+            console.log('Socket conectado exitosamente');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Socket desconectado');
+        });
+
+    document.getElementById('productForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const product = {
+            title: formData.get('title'),
+            description: formData.get('description'),
+            code: formData.get('code'),
+            price: parseFloat(formData.get('price')),
+            stock: parseInt(formData.get('stock')),
+            category: formData.get('category'),
+            status: formData.get('status') === 'on'
+        };
+
+        console.log('Enviando producto:', product);
+        socket.emit('addProduct', product);
+        e.target.reset();
+    });
+
+    function deleteProduct(id) {
+        if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+            socket.emit('deleteProduct', id);
+        }
+    }
+
+    socket.on('productsUpdated', (products) => {
+        console.log('Recibida actualización de productos:', products);
+        const productsList = document.getElementById('productsList');
+        
+        if (products.length === 0) {
+            productsList.innerHTML = `
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i>
+                    No hay productos disponibles
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="row">';
+        products.forEach(product => {
+            html += createProductCard(product);
+        });
+        html += '</div>';
+        productsList.innerHTML = html;
+        console.log('Lista de productos actualizada');
+    });
+
+    });
+</script>

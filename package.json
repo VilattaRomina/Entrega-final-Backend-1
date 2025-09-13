@@ -1,0 +1,19 @@
+{
+  "name": "entrega-2",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Entrega 2 - WebSockets con Handlebars",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --experimental-specifier-resolution=node --es-module-specifier-resolution=node src/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "express-handlebars": "^8.0.3",
+    "socket.io": "^4.8.1"
+  }
+}

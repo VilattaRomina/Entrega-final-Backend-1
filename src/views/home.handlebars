@@ -1,0 +1,20 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            Lista de Productos
+        </h1>
+        
+        {{#if products.length}}
+            <div class="row">
+                {{#each products}}
+                    {{> product-card showDeleteButton=false}}
+                {{/each}}
+            </div>
+        {{else}}
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i>
+                No hay productos disponibles
+            </div>
+        {{/if}}
+    </div>
+</div>

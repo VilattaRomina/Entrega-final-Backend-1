@@ -1,0 +1,24 @@
+<div class="col-md-4 mb-4" id="product-{{id}}">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title">{{title}}</h5>
+            <p class="card-text">{{description}}</p>
+            <ul class="list-unstyled">
+                <li><strong>Precio:</strong> ${{price}}</li>
+                <li><strong>Stock:</strong> {{stock}}</li>
+                <li><strong>Categoría:</strong> {{category}}</li>
+                <li><strong>Código:</strong> {{code}}</li>
+            </ul>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="badge {{#if status}}bg-success{{else}}bg-danger{{/if}}">
+                    {{#if status}}Disponible{{else}}No disponible{{/if}}
+                </span>
+                {{#if showDeleteButton}}
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('{{id}}')">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
