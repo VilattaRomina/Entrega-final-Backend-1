@@ -1,4 +1,4 @@
-<div class="col-md-4 mb-4" id="product-{{id}}">
+<div class="col-md-4 mb-4" id="product-{{_id}}">
     <div class="card h-100">
         <div class="card-body">
             <h5 class="card-title">{{title}}</h5>
@@ -14,7 +14,7 @@
                     {{#if status}}Disponible{{else}}No disponible{{/if}}
                 </span>
                 {{#if showDeleteButton}}
-                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('{{id}}')">
+                    <button class="btn btn-danger btn-sm" onclick="window.deleteProduct('{{_id}}')">
                         <i class="fas fa-trash"></i> Eliminar
                     </button>
                 {{/if}}

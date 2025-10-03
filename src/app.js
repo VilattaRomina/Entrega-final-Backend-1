@@ -4,44 +4,54 @@ import { Server } from 'socket.io';
 import { engine } from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { connectDB } from './config/database.js';
 import viewsRouter from './routes/views.router.js';
+import apiRouter from './routes/api/index.js';
 import ProductManager from './ProductManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+connectDB();
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
 const PORT = 8080;
 
-// Handlebars
-app.engine('handlebars', engine());
+app.engine('handlebars', engine({
+  helpers: {
+    multiply: (a, b) => a * b,
+    calculateTotal: (products) => {
+      return products.reduce((total, item) => {
+        return total + (item.product.price * item.quantity);
+      }, 0);
+    }
+  },
+  runtimeOptions: {
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true
+  }
+}));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Instancia del ProductManager
-const productManager = new ProductManager('./src/data/products.json');
+const productManager = new ProductManager();
 
-// Rutas de vistas
+app.use('/api', apiRouter);
+
 app.use('/', viewsRouter);
 
-// Socket.io
 io.on('connection', (socket) => {
-  console.log('Cliente conectado:', socket.id);
 
   socket.on('addProduct', async (productData) => {
-    console.log('Recibido addProduct:', productData);
     try {
       const newProduct = await productManager.addProduct(productData);
-      console.log('Producto agregado:', newProduct);
-      const products = await productManager.getProducts();
-      console.log('Enviando productsUpdated a todos los clientes:', products.length, 'productos');
-      io.emit('productsUpdated', products);
+      const result = await productManager.getProducts();
+      io.emit('productsUpdated', result.docs);
       socket.emit('productAdded', newProduct);
     } catch (error) {
       console.error('Error al agregar producto:', error);
@@ -50,17 +60,13 @@ io.on('connection', (socket) => {
   });
 
   socket.on('deleteProduct', async (productId) => {
-    console.log('Recibido deleteProduct:', productId);
     try {
-      const result = await productManager.deleteProduct(productId);
-      if (result) {
-        console.log('Producto eliminado exitosamente');
-        const products = await productManager.getProducts();
-        console.log('Enviando productsUpdated a todos los clientes:', products.length, 'productos');
-        io.emit('productsUpdated', products);
+      const deleted = await productManager.deleteProduct(productId);
+      if (deleted) {
+        const result = await productManager.getProducts();
+        io.emit('productsUpdated', result.docs);
         socket.emit('productDeleted', productId);
       } else {
-        console.log('Producto no encontrado');
         socket.emit('error', 'Producto no encontrado');
       }
     } catch (error) {
